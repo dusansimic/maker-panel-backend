@@ -9,4 +9,6 @@ script:
 notifications:
   slack:
     rooms:
-      - jovinaiot:9lomQFlipvUP9HSZtOYrrm9m#loraproj
+      - jovinaiot:9lomQFlipvUP9HSZtOYrrm9m
+    on_success: never
+    on_failuer: always
