@@ -6,3 +6,7 @@ install:
   - npm install
 script:
   - npm run test
+notifications:
+  slack:
+    rooms:
+      - jovinaiot:9lomQFlipvUP9HSZtOYrrm9m#loraproj
