@@ -77,6 +77,11 @@ restRouter.get('/:applicationId/devices', (req, res, next) => {
 });
 
 restRouter.get('/:applicationId/device/:deviceId', (req, res, next) => {
+	const query = {app_id: req.params.applicationId, dev_id: req.params.deviceId}; // eslint-disable-line camelcase
+	if (req.query.time) {
+		query['metadata.time'] = {$gte: (new Date(req.query.time)).toISOString()};
+	}
+
 	MongoClient.connect(config.serverUrl, (err, client) => {
 		if (err) {
 			return next(err);
@@ -84,7 +89,7 @@ restRouter.get('/:applicationId/device/:deviceId', (req, res, next) => {
 
 		const dataCollection = client.db(config.dbName).collection('data');
 
-		dataCollection.find({app_id: req.params.applicationId, dev_id: req.params.deviceId}, {payload_fields: 1, metadata: 1}).toArray((err, docs) => { // eslint-disable-line camelcase
+		dataCollection.find(query, {_id: 0, payload_fields: 1, metadata: 1}).toArray((err, docs) => { // eslint-disable-line camelcase
 			if (err) {
 				return next(err);
 			}
