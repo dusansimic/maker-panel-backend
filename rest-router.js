@@ -43,7 +43,7 @@ restRouter.get('/applications', (req, res, next) => {
 					apps.push(docs[i].app_id);
 				}
 			}
-
+      client.close();
 			res.send(apps);
 			next();
 		});
@@ -69,7 +69,7 @@ restRouter.get('/:applicationId/devices', (req, res, next) => {
 					devs.push(docs[i].dev_id);
 				}
 			}
-
+      client.close();
 			res.send(devs);
 			next();
 		});
@@ -93,7 +93,7 @@ restRouter.get('/:applicationId/device/:deviceId', (req, res, next) => {
 			if (err) {
 				return next(err);
 			}
-
+      client.close();
 			res.send(docs);
 			next();
 		});
