@@ -17,10 +17,10 @@ restRouter.get('/', (req, res, next) => {
 				return next(err);
 			}
 
-			client.close();
 			res.send(docs);
 			next();
 		});
+		client.close();
 	});
 });
 
@@ -43,10 +43,11 @@ restRouter.get('/applications', (req, res, next) => {
 					apps.push(docs[i].app_id);
 				}
 			}
-			client.close();
+
 			res.send(apps);
 			next();
 		});
+		client.close();
 	});
 });
 
@@ -69,10 +70,11 @@ restRouter.get('/:applicationId/devices', (req, res, next) => {
 					devs.push(docs[i].dev_id);
 				}
 			}
-			client.close();
+
 			res.send(devs);
 			next();
 		});
+		client.close();
 	});
 });
 
@@ -88,10 +90,11 @@ restRouter.get('/:applicationId/device/:deviceId', (req, res, next) => {
 			if (err) {
 				return next(err);
 			}
-			client.close();
+
 			res.send(docs);
 			next();
 		});
+		client.close();
 	});
 });
 

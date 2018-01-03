@@ -20,10 +20,11 @@ integrationsRouter.post('/', (req, res, next) => {
 			if (response.result.ok !== 1) {
 				return next(new Error('Data not inserted!'));
 			}
-			client.close();
+
 			res.send(response);
 			next();
 		});
+		client.close();
 	});
 });
 
