@@ -24,6 +24,7 @@ integrationsRouter.post('/', (req, res, next) => {
 			res.send(response);
 			next();
 		});
+		client.close();
 	});
 });
 
