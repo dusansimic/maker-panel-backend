@@ -14,6 +14,7 @@ integrationsRouter.post('/', (req, res, next) => {
 		const dataCollection = client.db(config.dbName).collection('data');
 
 		dataCollection.insertOne(data, (err, response) => {
+			client.close();
 			if (err) {
 				return next(err);
 			}
@@ -24,13 +25,12 @@ integrationsRouter.post('/', (req, res, next) => {
 			res.send(response);
 			next();
 		});
-		client.close();
 	});
 });
 
 integrationsRouter.use((err, req, res, next) => {
 	if (err) {
-		res.status(err.status).send({
+		res.status(err.status || 500).send({
 			error: err.error,
 			message: err.message
 		});

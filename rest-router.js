@@ -13,6 +13,7 @@ restRouter.get('/', (req, res, next) => {
 		const dataCollection = client.db(config.dbName).collection('data');
 
 		dataCollection.find({}, (err, docs) => {
+			client.close();
 			if (err) {
 				return next(err);
 			}
@@ -20,7 +21,6 @@ restRouter.get('/', (req, res, next) => {
 			res.send(docs);
 			next();
 		});
-		client.close();
 	});
 });
 
@@ -33,6 +33,7 @@ restRouter.get('/applications', (req, res, next) => {
 		const dataCollection = client.db(config.dbName).collection('data');
 
 		dataCollection.find({}, {_id: 0, app_id: 1}).toArray((err, docs) => { // eslint-disable-line camelcase
+			client.close();
 			if (err) {
 				return next(err);
 			}
@@ -47,7 +48,6 @@ restRouter.get('/applications', (req, res, next) => {
 			res.send(apps);
 			next();
 		});
-		client.close();
 	});
 });
 
@@ -60,6 +60,7 @@ restRouter.get('/:applicationId/devices', (req, res, next) => {
 		const dataCollection = client.db(config.dbName).collection('data');
 
 		dataCollection.find({app_id: req.params.applicationId}, {_id: 0, dev_id: 1}).toArray((err, docs) => { // eslint-disable-line camelcase
+			client.close();
 			if (err) {
 				return next(err);
 			}
@@ -74,7 +75,6 @@ restRouter.get('/:applicationId/devices', (req, res, next) => {
 			res.send(devs);
 			next();
 		});
-		client.close();
 	});
 });
 
@@ -92,6 +92,7 @@ restRouter.get('/:applicationId/device/:deviceId', (req, res, next) => {
 		const dataCollection = client.db(config.dbName).collection('data');
 
 		dataCollection.find(query, {_id: 0, payload_fields: 1, metadata: 1}).toArray((err, docs) => { // eslint-disable-line camelcase
+			client.close();
 			if (err) {
 				return next(err);
 			}
@@ -99,7 +100,6 @@ restRouter.get('/:applicationId/device/:deviceId', (req, res, next) => {
 			res.send(docs);
 			next();
 		});
-		client.close();
 	});
 });
 
