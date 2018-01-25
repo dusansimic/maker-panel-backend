@@ -1,4 +1,4 @@
 {
-	"serverUrl": "mongodb://localhost:27017",
+	"serverUrl": "mongodb://maker:MakerUser@ds115198.mlab.com:15198/makerpanel",
 	"dbName": "makerpanel"
 }
