@@ -12,7 +12,7 @@ restRouter.get('/', (req, res, next) => {
 
 		const dataCollection = client.db(config.dbName).collection('data');
 
-		dataCollection.find({}, (err, docs) => {
+		dataCollection.find({}).toArray((err, docs) => {
 			client.close();
 			if (err) {
 				return next(err);
