@@ -18,6 +18,7 @@
     "xo": "^0.18.2"
   },
   "scripts": {
+    "start": "node app.js",
     "dev": "nodemon app.js",
     "test": "xo"
   }
