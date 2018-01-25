@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use('/api', api);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, '0.0.0.0', err => {
 	if (err) {
 		throw err;
