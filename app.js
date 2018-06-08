@@ -7,7 +7,7 @@ const api = require('./api');
 const app = express();
 const server = http.createServer(app);
 
-if (!process.env.IS_PROD) {
+if (process.env.IS_PROD === false) {
 	const morgan = require('morgan');
 	app.use(morgan('dev'));
 }

@@ -6,12 +6,12 @@ const integrationsRouter = express.Router(); // eslint-disable-line new-cap
 
 integrationsRouter.post('/', (req, res, next) => {
 	const data = req.body;
-	MongoClient.connect(config.get('serverUrl'), (err, client) => {
+	MongoClient.connect(config.serverUrl, (err, client) => {
 		if (err) {
 			return next(err);
 		}
 
-		const dataCollection = client.db(config.get('dbName')).collection('data');
+		const dataCollection = client.db(config.dbName).collection('data');
 
 		dataCollection.insertOne(data, (err, response) => {
 			client.close();
