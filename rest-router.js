@@ -1,16 +1,16 @@
 const express = require('express');
-const MongoClient = require('mongodb').MongoClient;
-const config = require('./config.json');
+const {MongoClient} = require('mongodb');
+const config = require('./config');
 
 const restRouter = express.Router(); // eslint-disable-line new-cap
 
 restRouter.get('/', (req, res, next) => {
-	MongoClient.connect(config.serverUrl, (err, client) => {
+	MongoClient.connect(config.get('serverUrl'), (err, client) => {
 		if (err) {
 			return next(err);
 		}
 
-		const dataCollection = client.db(config.dbName).collection('data');
+		const dataCollection = client.db(config.get('dbName')).collection('data');
 
 		dataCollection.find({}).toArray((err, docs) => {
 			client.close();
@@ -25,12 +25,12 @@ restRouter.get('/', (req, res, next) => {
 });
 
 restRouter.get('/applications', (req, res, next) => {
-	MongoClient.connect(config.serverUrl, (err, client) => {
+	MongoClient.connect(config.get('serverUrl'), (err, client) => {
 		if (err) {
 			return next(err);
 		}
 
-		const dataCollection = client.db(config.dbName).collection('data');
+		const dataCollection = client.db(config.get('dbName')).collection('data');
 
 		dataCollection.find({}, {_id: 0, app_id: 1}).toArray((err, docs) => { // eslint-disable-line camelcase
 			client.close();
@@ -52,12 +52,12 @@ restRouter.get('/applications', (req, res, next) => {
 });
 
 restRouter.get('/:applicationId/devices', (req, res, next) => {
-	MongoClient.connect(config.serverUrl, (err, client) => {
+	MongoClient.connect(config.get('serverUrl'), (err, client) => {
 		if (err) {
 			return next(err);
 		}
 
-		const dataCollection = client.db(config.dbName).collection('data');
+		const dataCollection = client.db(config.get('dbName')).collection('data');
 
 		dataCollection.find({app_id: req.params.applicationId}, {_id: 0, dev_id: 1}).toArray((err, docs) => { // eslint-disable-line camelcase
 			client.close();
@@ -84,12 +84,12 @@ restRouter.get('/:applicationId/device/:deviceId', (req, res, next) => {
 		query['metadata.time'] = {$gte: (new Date(req.query.time)).toISOString()};
 	}
 
-	MongoClient.connect(config.serverUrl, (err, client) => {
+	MongoClient.connect(config.get('serverUrl'), (err, client) => {
 		if (err) {
 			return next(err);
 		}
 
-		const dataCollection = client.db(config.dbName).collection('data');
+		const dataCollection = client.db(config.get('dbName')).collection('data');
 
 		dataCollection.find(query, {_id: 0, payload_fields: 1, metadata: 1}).toArray((err, docs) => { // eslint-disable-line camelcase
 			client.close();

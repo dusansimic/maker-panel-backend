@@ -8,7 +8,9 @@ const api = require('./api');
 const app = express();
 const server = http.createServer(app);
 
-app.use(morgan('dev'));
+if (!process.env.IS_PROD) {
+	app.use(morgan('dev'));
+}
 app.use(bodyParser.json());
 app.use(cors());
 app.use('/api', api);
