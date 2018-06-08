@@ -1,6 +1,5 @@
 const http = require('http');
 const express = require('express');
-const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const api = require('./api');
@@ -9,6 +8,7 @@ const app = express();
 const server = http.createServer(app);
 
 if (!process.env.IS_PROD) {
+	const morgan = require('morgan');
 	app.use(morgan('dev'));
 }
 app.use(bodyParser.json());
