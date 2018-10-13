@@ -26,14 +26,8 @@ restRouter.get('/applications', async (_req, res, next) => {
 
 		const dataCollection = client.db(config.dbName).collection('data');
 
-		// eslint-disable-next-line camelcase
-		const docs = await dataCollection.find({}, {_id: 0, app_id: 1}).toArray();
+		const apps = await dataCollection.distinct('app_id');
 		client.close();
-
-		// Filter out unique app names from objects
-		const apps = docs.filter((obj, index, arr) => {
-			return arr.map(mapObj => mapObj.app_id).indexOf(obj.app_id) === index;
-		});
 
 		res.send(apps);
 		next();
@@ -49,12 +43,8 @@ restRouter.get('/:applicationId/devices', async (req, res, next) => {
 		const dataCollection = client.db(config.dbName).collection('data');
 
 		// eslint-disable-next-line camelcase
-		const docs = await dataCollection.find({app_id: req.params.applicationId}, {_id: 0, dev_id: 1}).toArray();
+		const devs = await dataCollection.distinct('dev_id', {app_id: req.params.applicationId});
 		client.close();
-
-		const devs = docs.filter((obj, index, arr) => {
-			return arr.map(mapObj => mapObj.dev_id).indexOf(obj.dev_id) === index;
-		});
 
 		res.send(devs);
 		next();
