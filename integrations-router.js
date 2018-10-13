@@ -4,38 +4,24 @@ const config = require('./config');
 
 const integrationsRouter = express.Router(); // eslint-disable-line new-cap
 
-integrationsRouter.post('/', (req, res, next) => {
-	const data = req.body;
-	MongoClient.connect(config.serverUrl, (err, client) => {
-		if (err) {
-			return next(err);
-		}
+integrationsRouter.post('/', async (req, res, next) => {
+	try {
+		const data = req.body;
+		const client = await MongoClient.connect(config.serverUrl);
 
 		const dataCollection = client.db(config.dbName).collection('data');
 
-		dataCollection.insertOne(data, (err, response) => {
-			client.close();
-			if (err) {
-				return next(err);
-			}
-			if (response.result.ok !== 1) {
-				return next(new Error('Data not inserted!'));
-			}
+		const response = await dataCollection.insertOne(data);
+		client.close();
+		if (response.result.ok !== 1) {
+			return next(new Error('Data not inserted!'));
+		}
 
-			res.send(response);
-			next();
-		});
-	});
-});
-
-integrationsRouter.use((err, req, res, next) => {
-	if (err) {
-		res.status(err.status || 500).send({
-			error: err.error,
-			message: err.message
-		});
+		res.send(response);
+		next();
+	} catch (err) {
+		return next(err);
 	}
-	next();
 });
 
 module.exports = integrationsRouter;
