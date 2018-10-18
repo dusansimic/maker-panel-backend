@@ -58,10 +58,8 @@ restRouter.get('/:applicationId/device/:deviceId', async (req, res, next) => {
 		let query = {app_id: req.params.applicationId, dev_id: req.params.deviceId}; // eslint-disable-line camelcase
 		if (req.query.time) {
 			const metadata = {
-				metadata: {
-					time: {
-						$gte: (new Date(req.query.time)).toISOString()
-					}
+				'metadata.time': {
+					$gte: (new Date(req.query.time)).toISOString()
 				}
 			};
 
