@@ -7,8 +7,8 @@ const integrationsRouter = express.Router(); // eslint-disable-line new-cap
 const transporter = nodemailer.createTransport({
 	service: 'gmail',
 	auth: {
-		user: 'maker.lora@gmail.com',
-		pass: 'makerpanel'
+		user: config.emailAdrres,
+		pass: config.emailPass
 	}
 });
 
