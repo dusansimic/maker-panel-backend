@@ -55,23 +55,15 @@ restRouter.get('/:applicationId/devices', async (req, res, next) => {
 
 restRouter.get('/:applicationId/device/:deviceId', async (req, res, next) => {
 	try {
-		let query = {app_id: req.params.applicationId, dev_id: req.params.deviceId}; // eslint-disable-line camelcase
-		if (req.query.time) {
-			const metadata = {
-				'metadata.time': {
-					$gte: (new Date(req.query.time)).toISOString()
-				}
-			};
-
-			query = {...query, ...metadata};
-		}
+		let query = {app_id: req.params.applicationId, dev_id: req.params.deviceId}; // eslint-disable-line camelcase, prefer-const
+		const amount = req.query.amount ? parseInt(req.query.amount, 10) : 30;
 
 		const client = await MongoClient.connect(config.serverUrl);
 
 		const dataCollection = client.db(config.dbName).collection('data');
 
 		// eslint-disable-next-line camelcase
-		const docs = await dataCollection.find(query, {_id: 0, payload_fields: 1, metadata: 1}).toArray();
+		const docs = await dataCollection.find(query, {_id: 0, payload_fields: 1, metadata: 1}).sort({'metadata.time': 1}).limit(amount).toArray();
 		client.close();
 
 		res.send(docs);
