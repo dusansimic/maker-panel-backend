@@ -36,7 +36,7 @@ restRouter.get('/applications', async (_req, res, next) => {
 	}
 });
 
-restRouter.get('/:applicationId/devices', async (req, res, next) => {
+restRouter.get('/application/:applicationId/devices', async (req, res, next) => {
 	try {
 		const client = await MongoClient.connect(config.serverUrl);
 
@@ -53,7 +53,7 @@ restRouter.get('/:applicationId/devices', async (req, res, next) => {
 	}
 });
 
-restRouter.get('/:applicationId/device/:deviceId', async (req, res, next) => {
+restRouter.get('/application/:applicationId/device/:deviceId', async (req, res, next) => {
 	try {
 		let query = {app_id: req.params.applicationId, dev_id: req.params.deviceId}; // eslint-disable-line camelcase, prefer-const
 		const amount = req.query.amount ? parseInt(req.query.amount, 10) : 30;
