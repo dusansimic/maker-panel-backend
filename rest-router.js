@@ -44,9 +44,18 @@ restRouter.get('/application/:applicationId/devices', async (req, res, next) => 
 
 		// eslint-disable-next-line camelcase
 		const devs = await dataCollection.distinct('dev_id', {app_id: req.params.applicationId});
+
+		const devices = [];
+		for (const dev of devs) {
+			// Get last updated time
+			const lastUpdated = await dataCollection.find	({'dev_id': dev}, {_id: 0, metadata: 1}).limit(1).sort({'metadata.time': -1}).toArray();
+			// Push data to devices list
+			devices.push({name: dev, lastUpdated: lastUpdated.metadata.time});
+		}
+
 		client.close();
 
-		res.send(devs);
+		res.send(devices);
 		next();
 	} catch (err) {
 		return next(err);
@@ -63,7 +72,7 @@ restRouter.get('/application/:applicationId/device/:deviceId', async (req, res, 
 		const dataCollection = client.db(config.dbName).collection('data');
 
 		// eslint-disable-next-line camelcase
-		const docs = await dataCollection.find(query, {_id: 0, payload_fields: 1, metadata: 1}).sort({'metadata.time': 1}).limit(amount).toArray();
+		const docs = await dataCollection.find(query, {_id: 0, payload_fields: 1, metadata: 1}).limit(amount).sort({'metadata.time': -1}).toArray();
 		client.close();
 
 		res.send(docs);
