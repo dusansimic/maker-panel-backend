@@ -7,7 +7,7 @@ const integrationsRouter = express.Router(); // eslint-disable-line new-cap
 integrationsRouter.post('/', async (req, res, next) => {
 	try {
 		const data = req.body;
-		const client = await MongoClient.connect(config.serverUrl);
+		const client = await MongoClient.connect(config.serverUrl, config.settings);
 
 		const dataCollection = client.db(config.dbName).collection('data');
 

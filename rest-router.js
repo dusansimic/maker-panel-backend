@@ -6,7 +6,7 @@ const restRouter = express.Router(); // eslint-disable-line new-cap
 
 restRouter.get('/', async (_req, res, next) => {
 	try {
-		const client = await MongoClient.connect(config.serverUrl);
+		const client = await MongoClient.connect(config.serverUrl, config.settings);
 
 		const dataCollection = client.db(config.dbName).collection('data');
 
@@ -22,7 +22,7 @@ restRouter.get('/', async (_req, res, next) => {
 
 restRouter.get('/applications', async (_req, res, next) => {
 	try {
-		const client = await MongoClient.connect(config.serverUrl);
+		const client = await MongoClient.connect(config.serverUrl, config.settings);
 
 		const dataCollection = client.db(config.dbName).collection('data');
 
@@ -38,7 +38,7 @@ restRouter.get('/applications', async (_req, res, next) => {
 
 restRouter.get('/application/:applicationId/devices', async (req, res, next) => {
 	try {
-		const client = await MongoClient.connect(config.serverUrl);
+		const client = await MongoClient.connect(config.serverUrl, config.settings);
 
 		const dataCollection = client.db(config.dbName).collection('data');
 
@@ -48,7 +48,8 @@ restRouter.get('/application/:applicationId/devices', async (req, res, next) => 
 		const devices = [];
 		for (const dev of devs) {
 			// Get last updated time
-			const lastUpdated = await dataCollection.find	({'dev_id': dev}, {_id: 0, metadata: 1}).limit(1).sort({'metadata.time': -1}).toArray();
+			// eslint-disable-next-line camelcase, no-await-in-loop
+			const lastUpdated = (await dataCollection.find({dev_id: dev}, {_id: 0, metadata: 1}).limit(1).sort({'metadata.time': -1}).toArray())[0];
 			// Push data to devices list
 			devices.push({name: dev, lastUpdated: lastUpdated.metadata.time});
 		}
@@ -64,20 +65,35 @@ restRouter.get('/application/:applicationId/devices', async (req, res, next) => 
 
 restRouter.get('/application/:applicationId/device/:deviceId', async (req, res, next) => {
 	try {
-		let query = {app_id: req.params.applicationId, dev_id: req.params.deviceId}; // eslint-disable-line camelcase, prefer-const
+		const query = {app_id: req.params.applicationId, dev_id: req.params.deviceId}; // eslint-disable-line camelcase
 		const amount = req.query.amount ? parseInt(req.query.amount, 10) : 30;
 
-		const client = await MongoClient.connect(config.serverUrl);
+		const getOnlyLocation = req.query.hasOwnProperty('onlyLocation') && req.query.onlyLocation === 'true'; // eslint-disable-line no-prototype-builtins
+		const options = getOnlyLocation ? {metadata: 1} : {payload_fields: 1, metadata: 1}; // eslint-disable-line camelcase
+
+		const client = await MongoClient.connect(config.serverUrl, config.settings);
 
 		const dataCollection = client.db(config.dbName).collection('data');
 
+		if (getOnlyLocation) {
+			let location = (await dataCollection.find(query, options).limit(1).sort({'metadata.time': -1}).toArray())[0];
+			client.close();
+
+			const hasLocation = location.metadata.hasOwnProperty('latitude'); // eslint-disable-line no-prototype-builtins
+			location = hasLocation ? [location.metadata.latitude, location.metadata.longitude] : [0, 0];
+
+			res.send({hasLocation, location});
+			return next();
+		}
+
 		// eslint-disable-next-line camelcase
-		const docs = await dataCollection.find(query, {_id: 0, payload_fields: 1, metadata: 1}).limit(amount).sort({'metadata.time': -1}).toArray();
+		const docs = await dataCollection.find(query, options).limit(amount).sort({'metadata.time': -1}).toArray();
 		client.close();
 
 		res.send(docs);
 		next();
 	} catch (err) {
+		console.error(err);
 		return next(err);
 	}
 });
